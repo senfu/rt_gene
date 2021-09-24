@@ -27,11 +27,10 @@ _transforms_list = [transforms.RandomResizedCrop(size=_required_size, scale=(0.8
                     lambda x: x.filter(ImageFilter.GaussianBlur(radius=3)),
                     lambda x: ImageOps.equalize(x)]  # histogram equalisation
 
-
 def transform_and_augment(image, augment=False):
     toTensor = transforms.ToTensor()
     toPILImage = transforms.ToPILImage()
-    augmented_images = [np.array(toPILImage(trans(toTensor(image)))) for trans in _transforms_list if augment is True]
+    augmented_images = [np.array(toPILImage(trans(toTensor(image)))) if type(trans) in [transforms.RandomResizedCrop, transforms.Grayscale] else np.array(trans(image)) for trans in _transforms_list if augment is True]
     augmented_images.append(np.array(image))
 
     return np.array(augmented_images, dtype=np.uint8)
