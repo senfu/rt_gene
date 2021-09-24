@@ -102,7 +102,7 @@ if __name__ == "__main__":
         camera_calibration = os.path.join(subject_path, "Calibration/Camera.mat")
         camera_matrix = sio.loadmat(camera_calibration)["cameraMatrix"]
         days = sorted(list(glob(os.path.join(subject_path, "day*"))))
-        for day in tqdm(days, desc="Subject {}".format(subject_id)):
+        for day in days:
             with open(os.path.join(day, "annotation.txt"), "r") as reader:
                 image_annotations = reader.readlines()
 
