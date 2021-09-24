@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     _compression = "lzf" if args.compress is True else None
 
-    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w', driver="mpio")
+    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w')
     hdf_file.atomic = True
     
     faceModel = sio.loadmat(os.path.join(args.mpii_root, '6 points-based face model.mat'))["model"]
