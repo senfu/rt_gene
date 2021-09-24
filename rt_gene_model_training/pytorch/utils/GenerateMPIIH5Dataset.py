@@ -11,23 +11,23 @@ from PIL import ImageFilter, ImageOps, Image
 from torchvision import transforms
 from tqdm import tqdm
 
-_required_size = (224, 224)
-_transforms_list = [transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),  # equivalent to random 5px from each edge
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
-                    transforms.Grayscale(num_output_channels=3),
-                    lambda x: x.filter(ImageFilter.GaussianBlur(radius=1)),
-                    lambda x: x.filter(ImageFilter.GaussianBlur(radius=3)),
-                    lambda x: ImageOps.equalize(x)]  # histogram equalisation
 
 def transform_and_augment(image, augment=False):
+    _required_size = image.shape[:2]
+    _transforms_list = [transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),  # equivalent to random 5px from each edge
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.RandomResizedCrop(size=_required_size, scale=(0.85, 1.0)),
+                        transforms.Grayscale(num_output_channels=3),
+                        lambda x: x.filter(ImageFilter.GaussianBlur(radius=1)),
+                        lambda x: x.filter(ImageFilter.GaussianBlur(radius=3)),
+                        lambda x: ImageOps.equalize(x)]  # histogram equalisation
     toTensor = transforms.ToTensor()
     toPILImage = transforms.ToPILImage()
     augmented_images = [np.array(toPILImage(trans(toTensor(image)))) if type(trans) in [transforms.RandomResizedCrop, transforms.Grayscale] else np.array(trans(Image.fromarray(image))) for trans in _transforms_list if augment is True]
