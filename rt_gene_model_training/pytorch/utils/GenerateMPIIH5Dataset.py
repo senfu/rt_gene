@@ -7,7 +7,7 @@ import cv2
 import h5py
 import numpy as np
 import scipy.io as sio
-from PIL import ImageFilter, ImageOps
+from PIL import ImageFilter, ImageOps, Image
 from torchvision import transforms
 from tqdm import tqdm
 
@@ -30,7 +30,7 @@ _transforms_list = [transforms.RandomResizedCrop(size=_required_size, scale=(0.8
 def transform_and_augment(image, augment=False):
     toTensor = transforms.ToTensor()
     toPILImage = transforms.ToPILImage()
-    augmented_images = [np.array(toPILImage(trans(toTensor(image)))) if type(trans) in [transforms.RandomResizedCrop, transforms.Grayscale] else np.array(trans(image)) for trans in _transforms_list if augment is True]
+    augmented_images = [np.array(toPILImage(trans(toTensor(image)))) if type(trans) in [transforms.RandomResizedCrop, transforms.Grayscale] else np.array(trans(Image.fromarray(image))) for trans in _transforms_list if augment is True]
     augmented_images.append(np.array(image))
 
     return np.array(augmented_images, dtype=np.uint8)
