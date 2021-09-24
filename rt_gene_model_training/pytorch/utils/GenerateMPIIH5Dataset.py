@@ -9,9 +9,7 @@ import numpy as np
 import scipy.io as sio
 from PIL import ImageFilter, ImageOps, Image
 from torchvision import transforms
-from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map
-
+from mpi4py import MPI
 
 def transform_and_augment(image, augment=False):
     _required_size = image.shape[:2]
@@ -87,7 +85,7 @@ if __name__ == "__main__":
 
     _compression = "lzf" if args.compress is True else None
 
-    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w', driver='mpio')
+    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w', driver='mpio', comm=MPI.COMM_WORLD)
     hdf_file.atomic = True
     
     faceModel = sio.loadmat(os.path.join(args.mpii_root, '6 points-based face model.mat'))["model"]
