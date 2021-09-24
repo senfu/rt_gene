@@ -75,7 +75,7 @@ def normalize_img(img, target_3d, head_rotation, gc, roi_size, cam_matrix, focal
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Estimate gaze from images')
     parser.add_argument('--mpii_root', type=str, required=True, nargs='?', help='Path to the base directory of MPII')
-    parser.add_argument('--augment_dataset', type=bool, required=False, default=False, help="Whether to augment the dataset with predefined transforms")
+    parser.add_argument('--augment_dataset', action='store_true', help="Whether to augment the dataset with predefined transforms")
     parser.add_argument('--compress', action='store_true', dest="compress")
     parser.add_argument('--no-compress', action='store_false', dest="compress")
     parser.set_defaults(compress=False)
