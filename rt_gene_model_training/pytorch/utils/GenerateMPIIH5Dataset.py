@@ -29,7 +29,9 @@ _transforms_list = [transforms.RandomResizedCrop(size=_required_size, scale=(0.8
 
 
 def transform_and_augment(image, augment=False):
-    augmented_images = [np.array(trans(image)) for trans in _transforms_list if augment is True]
+    toTensor = transforms.ToTensor()
+    toPILImage = transforms.ToPILImage()
+    augmented_images = [np.array(toPILImage(trans(toTensor(image)))) for trans in _transforms_list if augment is True]
     augmented_images.append(np.array(image))
 
     return np.array(augmented_images, dtype=np.uint8)
