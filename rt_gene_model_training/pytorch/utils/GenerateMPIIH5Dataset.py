@@ -10,6 +10,7 @@ import scipy.io as sio
 from PIL import ImageFilter, ImageOps, Image
 from torchvision import transforms
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 
 def transform_and_augment(image, augment=False):
@@ -84,14 +85,19 @@ if __name__ == "__main__":
 
     _compression = "lzf" if args.compress is True else None
 
-    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w')
+    hdf_file = h5py.File(os.path.abspath(os.path.join(args.mpii_root, 'mpii_dataset.hdf5')), mode='w', driver="mpio")
+    hdf_file.atomic = True
+    
     faceModel = sio.loadmat(os.path.join(args.mpii_root, '6 points-based face model.mat'))["model"]
     subjects = [os.path.join(args.mpii_root, "Data", "Original", 'p{:02d}/'.format(_i)) for _i in range(0, 15)]
+    
+    tqdm.write(f"Number of subjects : {len(subjects)}")
 
-    for subject_id, subject_path in enumerate(subjects):
-        data_files = sorted(glob(os.path.join(subject_path, "*.mat")))
+    def handle_subject(subject):
+        subject_id, subject_path = subject
         subject_id = str("s{:03d}".format(subject_id))
         subject_grp = hdf_file.create_group(subject_id)
+        
         data_store_idx = 0
         camera_calibration = os.path.join(subject_path, "Calibration/Camera.mat")
         camera_matrix = sio.loadmat(camera_calibration)["cameraMatrix"]
@@ -149,6 +155,8 @@ if __name__ == "__main__":
                 image_grp.create_dataset("left", data=left_data, compression=_compression)
                 image_grp.create_dataset("right", data=right_data, compression=_compression)
                 image_grp.create_dataset("label", data=labels)
+    
+    process_map(handle_subject, list(enumerate(subjects)))
 
     hdf_file.flush()
     hdf_file.close()
