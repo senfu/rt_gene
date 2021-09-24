@@ -5,7 +5,7 @@
 
 from __future__ import print_function, division, absolute_import
 
-import rt_gene.download_tools as download_tools
+import src.rt_gene.download_tools as download_tools
 
 
 if __name__ == '__main__':
