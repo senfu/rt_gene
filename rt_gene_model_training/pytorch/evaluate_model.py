@@ -9,6 +9,10 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+
+import sys
+sys.path.append("/home/student/dms/rt_gene/rt_gene/src")
+
 from rt_gene.gaze_estimation_models_pytorch import GazeEstimationModelResnet18, \
     GazeEstimationModelVGG, GazeEstimationModelPreactResnet
 from rtgene_dataset import RTGENEH5Dataset
@@ -87,8 +91,8 @@ if __name__ == "__main__":
             epoch_ckpt = glob.glob(os.path.abspath(os.path.join(fold, "*.ckpt")))
             for ckpt in tqdm(epoch_ckpt, desc="Checkpoint evaluation.."):
                 # load data
-                data_test = RTGENEH5Dataset(h5_file=h5py.File(hyperparams.hdf5_file, mode="r"), subject_list=test_subject)
-                data_loader = DataLoader(data_test, batch_size=hyperparams.batch_size, shuffle=True, num_workers=hyperparams.num_io_workers, pin_memory=False)
+                data_test = RTGENEH5Dataset(h5_filename=hyperparams.hdf5_file, subject_list=test_subject)
+                data_loader = DataLoader(data_test, batch_size=hyperparams.batch_size, shuffle=True, num_workers=hyperparams.num_io_workers, pin_memory=False, persistent_workers=True)
 
                 model = _models.get(hyperparams.model_base)()
                 model.load_state_dict(torch.load(ckpt))
