@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules.pooling import AdaptiveAvgPool2d
 from torchvision import models
 
 
@@ -255,11 +256,11 @@ class GazeEstimationModelMobilenetV2(GazeEstimationAbstractModel):
 
         # remove the last ConvBRelu layer
         _left_modules = [module for module in _left_model.features]
-        _left_modules.append(_left_model.avgpool)
+        _left_modules.append(AdaptiveAvgPool2d(output_size=(1, 1)))
         self.left_features = nn.Sequential(*_left_modules)
 
         _right_modules = [module for module in _right_model.features]
-        _right_modules.append(_right_model.avgpool)
+        _right_modules.append(AdaptiveAvgPool2d(output_size=(1, 1)))
         self.right_features = nn.Sequential(*_right_modules)
 
         for param in self.left_features.parameters():
