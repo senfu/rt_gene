@@ -249,7 +249,7 @@ class GazeEstimationModelVGG(GazeEstimationAbstractModel):
 class GazeEstimationModelMobilenetV2(GazeEstimationAbstractModel):
 
     def __init__(self, num_out=2):
-        super(GazeEstimationModelVGG, self).__init__()
+        super(GazeEstimationModelMobilenetV2, self).__init__()
         _left_model = models.mobilenet.mobilenet_v2(pretrained=True)
         _right_model = models.mobilenet.mobilenet_v2(pretrained=True)
 
