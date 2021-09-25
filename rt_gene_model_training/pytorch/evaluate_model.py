@@ -74,7 +74,7 @@ if __name__ == "__main__":
         _models_list = []
         for model_file in tqdm(hyperparams.model_loc, desc="Ensemble Evaluation; Loading models..."):
             _model = _models.get(hyperparams.model_base)()
-            _model.load_state_dict(torch.load(model_file))
+            _model.load_state_dict(torch.load(model_file)['state_dict'])
             _model.to("cuda:0")
             _model.eval()
             _models_list.append(_model)
