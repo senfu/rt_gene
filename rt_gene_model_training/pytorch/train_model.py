@@ -5,6 +5,7 @@ from functools import partial
 import h5py
 import numpy as np
 import pytorch_lightning as pl
+from pytorch_lightning.accelerators import accelerator
 import torch
 from PIL import ImageFilter
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
@@ -126,19 +127,19 @@ class TrainRTGENE(pl.LightningModule):
                                       subject_list=self._train_subjects,
                                       transform=_train_transforms)
         return DataLoader(_data_train, batch_size=self.args.batch_size, shuffle=True,
-                          num_workers=self.args.num_io_workers, pin_memory=False)
+                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
 
     def val_dataloader(self):
         _data_validate = RTGENEH5Dataset(h5_filename=self.args.hdf5_file,
                                          subject_list=self._validate_subjects)
         return DataLoader(_data_validate, batch_size=self.args.batch_size, shuffle=False,
-                          num_workers=self.args.num_io_workers, pin_memory=False)
+                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
 
     def test_dataloader(self):
         _data_test = RTGENEH5Dataset(h5_filename=self.args.hdf5_file,
                                      subject_list=self._test_subjects)
         return DataLoader(_data_test, batch_size=self.args.batch_size, shuffle=False,
-                          num_workers=self.args.num_io_workers, pin_memory=False)
+                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
 
 
 if __name__ == "__main__":
@@ -227,6 +228,7 @@ if __name__ == "__main__":
                           min_epochs=_hyperparams.min_epochs,
                           max_epochs=_hyperparams.max_epochs,
                           accumulate_grad_batches=_hyperparams.accumulate_grad_batches,
-                          benchmark=_hyperparams.benchmark)
+                          benchmark=_hyperparams.benchmark,
+                          accelerator='dp')
         trainer.fit(_model)
         trainer.test()
