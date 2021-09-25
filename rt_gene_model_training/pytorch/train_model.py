@@ -17,7 +17,7 @@ import sys
 sys.path.append("/home/student/dms/rt_gene/rt_gene/src")
 
 from rt_gene.gaze_estimation_models_pytorch import GazeEstimationModelResnet18, GazeEstimationModelVGG, \
-    GazeEstimationModelPreactResnet
+    GazeEstimationModelPreactResnet, GazeEstimationModelMobilenetV2
 from rtgene_dataset import RTGENEH5Dataset
 from utils.GazeAngleAccuracy import GazeAngleAccuracy
 from utils.PinballLoss import PinballLoss
@@ -38,7 +38,8 @@ class TrainRTGENE(pl.LightningModule):
         _models = {
             "vgg16": partial(GazeEstimationModelVGG, num_out=_param_num.get(hparams.loss_fn)),
             "resnet18": partial(GazeEstimationModelResnet18, num_out=_param_num.get(hparams.loss_fn)),
-            "preactresnet": partial(GazeEstimationModelPreactResnet, num_out=_param_num.get(hparams.loss_fn))
+            "preactresnet": partial(GazeEstimationModelPreactResnet, num_out=_param_num.get(hparams.loss_fn)),
+            "mobilenetv2": partial(GazeEstimationModelMobilenetV2, num_out=_param_num.get(hparams.loss_fn)),
         }
         self._model = _models.get(hparams.model_base)()
         self._criterion = _loss_fn.get(hparams.loss_fn)()
@@ -108,7 +109,7 @@ class TrainRTGENE(pl.LightningModule):
         parser.add_argument('--batch_size', default=128, type=int)
         parser.add_argument('--batch_norm', default=True, type=bool)
         parser.add_argument('--learning_rate', type=float, default=0.0003)
-        parser.add_argument('--model_base', choices=["vgg16", "resnet18", "preactresnet"], default="vgg16")
+        parser.add_argument('--model_base', choices=["vgg16", "resnet18", "preactresnet", "mobilenetv2"], default="vgg16")
         return parser
 
     def train_dataloader(self):
