@@ -69,9 +69,9 @@ class TrainRTGENE(pl.LightningModule):
 
     def validation_epoch_end(self, outputs):
         _losses = torch.stack([x['val_loss'] for x in outputs])
-        _angles = np.array([x['angle_acc'] for x in outputs])
-        self.log("val_loss", _losses.mean())
-        self.log("val_angle", _angles.mean())
+        _angles = torch.tensor([x['angle_acc'] for x in outputs])
+        self.log("val_loss", _losses.mean().item())
+        self.log("val_angle", _angles.mean().item())
 
     def test_step(self, batch, batch_idx):
         _left_patch, _right_patch, _headpose_label, _gaze_labels = batch
