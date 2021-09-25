@@ -5,12 +5,15 @@ from PIL import Image
 from torch.utils import data
 from torchvision import transforms
 from tqdm import tqdm
-
+import h5py
 
 class RTGENEH5Dataset(data.Dataset):
 
-    def __init__(self, h5_file, subject_list=None, transform=None):
-        self._h5_file = h5_file
+    def __init__(self, h5_filename, subject_list=None, transform=None):
+        self._h5_filename = h5_filename
+        with h5py.File(self._h5_filename, 'r') as file:
+            self._h5_file = file
+            
         self._transform = transform
         self._subject_labels = []
 
@@ -24,7 +27,7 @@ class RTGENEH5Dataset(data.Dataset):
         _wanted_subjects = ["s{:03d}".format(_i) for _i in subject_list]
 
         for grp_s_n in tqdm(_wanted_subjects, desc="Loading subject metadata..."):  # subjects
-            for grp_i_n, grp_i in h5_file[grp_s_n].items():  # images
+            for grp_i_n, grp_i in self.h5_file[grp_s_n].items():  # images
                 if "left" in grp_i.keys() and "right" in grp_i.keys() and "label" in grp_i.keys():
                     left_dataset = grp_i["left"]
                     right_datset = grp_i['right']
