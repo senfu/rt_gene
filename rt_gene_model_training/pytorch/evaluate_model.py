@@ -74,7 +74,10 @@ if __name__ == "__main__":
         _models_list = []
         for model_file in tqdm(hyperparams.model_loc, desc="Ensemble Evaluation; Loading models..."):
             _model = _models.get(hyperparams.model_base)()
-            _model.load_state_dict(torch.load(model_file)['state_dict'])
+            ckpt = torch.load(model_file)['state_dict']
+            for key in ckpt:
+                ckpt[key[7:]] = ckpt.pop(key)
+            _model.load_state_dict(ckpt)
             _model.to("cuda:0")
             _model.eval()
             _models_list.append(_model)
@@ -95,7 +98,10 @@ if __name__ == "__main__":
                 data_loader = DataLoader(data_test, batch_size=hyperparams.batch_size, shuffle=True, num_workers=hyperparams.num_io_workers, pin_memory=False, persistent_workers=True)
 
                 model = _models.get(hyperparams.model_base)()
-                model.load_state_dict(torch.load(ckpt)['state_dict'])
+                ckpt = torch.load(ckpt)['state_dict']
+                for key in ckpt:
+                    ckpt[key[7:]] = ckpt.pop(key)
+                model.load_state_dict(ckpt)
                 model.to("cuda:0")
                 model.eval()
 
