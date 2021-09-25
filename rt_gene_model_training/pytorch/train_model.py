@@ -11,6 +11,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
+import sys
+sys.path.append("/home/student/dms/rt_gene/rt_gene/src")
+
 from rt_gene.gaze_estimation_models_pytorch import GazeEstimationModelResnet18, GazeEstimationModelVGG, \
     GazeEstimationModelPreactResnet
 from rtgene_dataset import RTGENEH5Dataset
