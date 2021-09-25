@@ -146,7 +146,7 @@ if __name__ == "__main__":
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     _root_parser = ArgumentParser(add_help=False)
-    _root_parser.add_argument('--gpu', type=int, help='gpu to use', required=True)
+    _root_parser.add_argument('--gpu', type=str, help='gpu to use', required=True)
     _root_parser.add_argument('--hdf5_file', type=str,
                               default=os.path.abspath(os.path.join(root_dir, "../../RT_GENE/rtgene_dataset.hdf5")))
     _root_parser.add_argument('--dataset', type=str, choices=["rt_gene", "other"], default="rt_gene")
