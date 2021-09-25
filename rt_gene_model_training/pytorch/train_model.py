@@ -10,6 +10,7 @@ from PIL import ImageFilter
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
+from pprint import pprint
 
 import sys
 sys.path.append("/home/student/dms/rt_gene/rt_gene/src")
@@ -166,6 +167,8 @@ if __name__ == "__main__":
 
     _model_parser = TrainRTGENE.add_model_specific_args(_root_parser)
     _hyperparams = _model_parser.parse_args()
+    
+    pprint(_hyperparams)
 
     pl.seed_everything(_hyperparams.seed)
 
@@ -212,7 +215,7 @@ if __name__ == "__main__":
                              validate_subjects=valid_s,
                              test_subjects=test_s)
         # save all models
-        checkpoint_callback = ModelCheckpoint(filepath=os.path.join(complete_path, "{epoch}-{val_loss:.3f}"),
+        checkpoint_callback = ModelCheckpoint(filename=os.path.join(complete_path, "{epoch}-{val_loss:.3f}"),
                                               monitor='val_loss', mode='min', verbose=False,
                                               save_top_k=-1 if not _hyperparams.augment else 5)
 
