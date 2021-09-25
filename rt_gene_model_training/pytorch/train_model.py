@@ -44,7 +44,7 @@ class TrainRTGENE(pl.LightningModule):
         self._train_subjects = train_subjects
         self._validate_subjects = validate_subjects
         self._test_subjects = test_subjects
-        self.hparams = vars(hparams)
+        self.args = vars(hparams)
 
     def forward(self, left_patch, right_patch, head_pose):
         return self._model(left_patch, right_patch, head_pose)
@@ -91,7 +91,7 @@ class TrainRTGENE(pl.LightningModule):
             if param.requires_grad:
                 _params_to_update.append(param)
 
-        _learning_rate = self.hparams.learning_rate
+        _learning_rate = self.args.learning_rate
         _optimizer = torch.optim.Adam(_params_to_update, lr=_learning_rate)
         _scheduler = torch.optim.lr_scheduler.StepLR(_optimizer, step_size=30, gamma=0.1)
 
@@ -111,7 +111,7 @@ class TrainRTGENE(pl.LightningModule):
 
     def train_dataloader(self):
         _train_transforms = None
-        if self.hparams.augment:
+        if self.args.augment:
             _train_transforms = transforms.Compose([transforms.RandomResizedCrop(size=(36, 60), scale=(0.5, 1.3)),
                                                     transforms.RandomGrayscale(p=0.1),
                                                     transforms.ColorJitter(brightness=0.5, hue=0.2, contrast=0.5,
@@ -121,23 +121,23 @@ class TrainRTGENE(pl.LightningModule):
                                                     transforms.ToTensor(),
                                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                                          std=[0.229, 0.224, 0.225])])
-        _data_train = RTGENEH5Dataset(h5_file=h5py.File(self.hparams.hdf5_file, mode="r"),
+        _data_train = RTGENEH5Dataset(h5_file=h5py.File(self.args.hdf5_file, mode="r"),
                                       subject_list=self._train_subjects,
                                       transform=_train_transforms)
-        return DataLoader(_data_train, batch_size=self.hparams.batch_size, shuffle=True,
-                          num_workers=self.hparams.num_io_workers, pin_memory=False)
+        return DataLoader(_data_train, batch_size=self.args.batch_size, shuffle=True,
+                          num_workers=self.args.num_io_workers, pin_memory=False)
 
     def val_dataloader(self):
-        _data_validate = RTGENEH5Dataset(h5_file=h5py.File(self.hparams.hdf5_file, mode="r"),
+        _data_validate = RTGENEH5Dataset(h5_file=h5py.File(self.args.hdf5_file, mode="r"),
                                          subject_list=self._validate_subjects)
-        return DataLoader(_data_validate, batch_size=self.hparams.batch_size, shuffle=False,
-                          num_workers=self.hparams.num_io_workers, pin_memory=False)
+        return DataLoader(_data_validate, batch_size=self.args.batch_size, shuffle=False,
+                          num_workers=self.args.num_io_workers, pin_memory=False)
 
     def test_dataloader(self):
-        _data_test = RTGENEH5Dataset(h5_file=h5py.File(self.hparams.hdf5_file, mode="r"),
+        _data_test = RTGENEH5Dataset(h5_file=h5py.File(self.args.hdf5_file, mode="r"),
                                      subject_list=self._test_subjects)
-        return DataLoader(_data_test, batch_size=self.hparams.batch_size, shuffle=False,
-                          num_workers=self.hparams.num_io_workers, pin_memory=False)
+        return DataLoader(_data_test, batch_size=self.args.batch_size, shuffle=False,
+                          num_workers=self.args.num_io_workers, pin_memory=False)
 
 
 if __name__ == "__main__":

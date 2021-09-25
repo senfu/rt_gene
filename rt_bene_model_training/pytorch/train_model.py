@@ -38,7 +38,7 @@ class TrainRTBENE(pl.LightningModule):
         self._criterion = _loss_fn.get(hparams.loss_fn)()
         self._train_subjects = train_subjects
         self._validate_subjects = validate_subjects
-        self.hparams = hparams
+        self.args = hparams
 
     def forward(self, left_patch, right_patch):
         return self._model(left_patch, right_patch)
@@ -67,9 +67,9 @@ class TrainRTBENE(pl.LightningModule):
             if param.requires_grad:
                 _params_to_update.append(param)
 
-        _optimizer = torch.optim.AdamW(_params_to_update, lr=self.hparams.learning_rate)
-        _scheduler = torch.optim.lr_scheduler.StepLR(_optimizer, step_size=self.hparams.scheduler_step,
-                                                     gamma=self.hparams.scheduler_gamma)
+        _optimizer = torch.optim.AdamW(_params_to_update, lr=self.args.learning_rate)
+        _scheduler = torch.optim.lr_scheduler.StepLR(_optimizer, step_size=self.args.scheduler_step,
+                                                     gamma=self.args.scheduler_gamma)
 
         return [_optimizer], [_scheduler]
 
@@ -90,7 +90,7 @@ class TrainRTBENE(pl.LightningModule):
 
     def train_dataloader(self):
         _train_transforms = None
-        if self.hparams.augment:
+        if self.args.augment:
             _train_transforms = transforms.Compose([transforms.RandomResizedCrop(size=(224, 224), scale=(0.5, 1.3)),
                                                     transforms.RandomPerspective(distortion_scale=0.2),
                                                     transforms.RandomGrayscale(p=0.1),
@@ -102,17 +102,17 @@ class TrainRTBENE(pl.LightningModule):
                                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                                          std=[0.229, 0.224, 0.225])])
 
-        _data_train = RTBENEH5Dataset(h5_file=h5py.File(self.hparams.hdf5_file, mode="r"),
+        _data_train = RTBENEH5Dataset(h5_file=h5py.File(self.args.hdf5_file, mode="r"),
                                       subject_list=self._train_subjects, transform=_train_transforms,
                                       loader_desc="train")
-        return DataLoader(_data_train, batch_size=self.hparams.batch_size, shuffle=True,
-                          num_workers=self.hparams.num_io_workers, pin_memory=True)
+        return DataLoader(_data_train, batch_size=self.args.batch_size, shuffle=True,
+                          num_workers=self.args.num_io_workers, pin_memory=True)
 
     def val_dataloader(self):
-        _data_validate = RTBENEH5Dataset(h5_file=h5py.File(self.hparams.hdf5_file, mode="r"),
+        _data_validate = RTBENEH5Dataset(h5_file=h5py.File(self.args.hdf5_file, mode="r"),
                                          subject_list=self._validate_subjects, loader_desc="valid")
-        return DataLoader(_data_validate, batch_size=self.hparams.batch_size, shuffle=False,
-                          num_workers=self.hparams.num_io_workers, pin_memory=True)
+        return DataLoader(_data_validate, batch_size=self.args.batch_size, shuffle=False,
+                          num_workers=self.args.num_io_workers, pin_memory=True)
 
 
 if __name__ == "__main__":
