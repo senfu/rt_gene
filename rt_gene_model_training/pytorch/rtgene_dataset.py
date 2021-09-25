@@ -11,9 +11,10 @@ class RTGENEH5Dataset(data.Dataset):
 
     def __init__(self, h5_filename, subject_list=None, transform=None):
         self._h5_filename = h5_filename
-        self._h5_file = h5py.File(self._h5_filename, 'r')
+        self.h5_file = None
         self._transform = transform
-        self._subject_labels = []
+        self.subject_list = subject_list
+        # self._subject_labels = []
 
         assert subject_list is not None, "Must pass a list of subjects to load the data for"
 
@@ -22,27 +23,45 @@ class RTGENEH5Dataset(data.Dataset):
                                                   transforms.ToTensor(),
                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
 
-        _wanted_subjects = ["s{:03d}".format(_i) for _i in subject_list]
-
-        for grp_s_n in tqdm(_wanted_subjects, desc="Loading subject metadata..."):  # subjects
-            for grp_i_n, grp_i in self.h5_file[grp_s_n].items():  # images
-                if "left" in grp_i.keys() and "right" in grp_i.keys() and "label" in grp_i.keys():
-                    left_dataset = grp_i["left"]
-                    right_datset = grp_i['right']
-
-                    assert len(left_dataset) == len(right_datset), "Dataset left/right images aren't equal length"
-                    for _i in range(len(left_dataset)):
-                        self._subject_labels.append(["/" + grp_s_n + "/" + grp_i_n, _i])
-
+        _dataset_len = -1
+        with h5py.File(self._h5_filename, 'r') as h5_file:
+            _wanted_subjects = ["s{:03d}".format(_i) for _i in subject_list]
+            _subject_labels = []
+            for grp_s_n in tqdm(_wanted_subjects, desc="Loading subject metadata..."):  # subjects
+                for grp_i_n, grp_i in h5_file[grp_s_n].items():  # images
+                    if "left" in grp_i.keys() and "right" in grp_i.keys() and "label" in grp_i.keys():
+                        left_dataset = grp_i["left"]
+                        right_datset = grp_i['right']
+                        assert len(left_dataset) == len(right_datset), "Dataset left/right images aren't equal length"
+                        for _i in range(len(left_dataset)):
+                            _subject_labels.append(["/" + grp_s_n + "/" + grp_i_n, _i])
+            _dataset_len = len(_subject_labels)
+        assert _dataset_len != -1, "something wrong"
+        self.dataset_len = _dataset_len
+        
     def __len__(self):
-        return len(self._subject_labels)
+        return self.dataset_len
 
     def __getitem__(self, index):
+        if self.h5_file is None:
+            self.h5_file = h5py.File(self._h5_filename, 'r')
+            _wanted_subjects = ["s{:03d}".format(_i) for _i in self.subject_list]
+            self._subject_labels = []
+            for grp_s_n in tqdm(_wanted_subjects, desc="Loading subject metadata..."):  # subjects
+                for grp_i_n, grp_i in self.h5_file[grp_s_n].items():  # images
+                    if "left" in grp_i.keys() and "right" in grp_i.keys() and "label" in grp_i.keys():
+                        left_dataset = grp_i["left"]
+                        right_datset = grp_i['right']
+                        assert len(left_dataset) == len(right_datset), "Dataset left/right images aren't equal length"
+                        for _i in range(len(left_dataset)):
+                            self._subject_labels.append(["/" + grp_s_n + "/" + grp_i_n, _i])
+            
+            
         _sample = self._subject_labels[index]
         assert type(_sample[0]) == str, "Sample not found at index {}".format(index)
-        _left_img = self._h5_file[_sample[0] + "/left"][_sample[1]][()]
-        _right_img = self._h5_file[_sample[0] + "/right"][_sample[1]][()]
-        label_data = self._h5_file[_sample[0]+"/label"][()]
+        _left_img = self.h5_file[_sample[0] + "/left"][_sample[1]][()]
+        _right_img = self.h5_file[_sample[0] + "/right"][_sample[1]][()]
+        label_data = self.h5_file[_sample[0]+"/label"][()]
         _groud_truth_headpose = label_data[0][()].astype(np.float32)
         _ground_truth_gaze = label_data[1][()].astype(np.float32)
 
