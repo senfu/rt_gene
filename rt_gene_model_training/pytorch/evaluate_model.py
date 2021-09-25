@@ -64,7 +64,7 @@ if __name__ == "__main__":
         "preactresnet": partial(GazeEstimationModelPreactResnet, num_out=_param_num.get(hyperparams.loss_fn))
     }
 
-    test_subjects = [[5, 6, 11, 12, 13], [3, 4, 7, 9], [1, 2, 8, 10]]
+    test_subjects = [[0]]
     criterion = GazeAngleAccuracy()
 
     # definition of an ensemble is a list of FILES, if any are folders, then not an ensemble
