@@ -11,9 +11,7 @@ class RTGENEH5Dataset(data.Dataset):
 
     def __init__(self, h5_filename, subject_list=None, transform=None):
         self._h5_filename = h5_filename
-        with h5py.File(self._h5_filename, 'r') as file:
-            self._h5_file = file
-            
+        self._h5_file = h5py.File(self._h5_filename, 'r')
         self._transform = transform
         self._subject_labels = []
 
