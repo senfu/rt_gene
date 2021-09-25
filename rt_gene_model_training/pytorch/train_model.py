@@ -216,7 +216,8 @@ if __name__ == "__main__":
                              validate_subjects=valid_s,
                              test_subjects=test_s)
         # save all models
-        checkpoint_callback = ModelCheckpoint(filename=os.path.join(complete_path, "{epoch}-{val_loss:.3f}-{angle_acc:.3f}"),
+        checkpoint_callback = ModelCheckpoint(dirpath=complete_path,
+                                              filename="{epoch}-{val_loss:.3f}-{angle_acc:.3f}",
                                               monitor='val_loss', mode='min', verbose=False,
                                               save_top_k=-1 if not _hyperparams.augment else 5)
 
