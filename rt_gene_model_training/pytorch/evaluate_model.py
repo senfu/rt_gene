@@ -95,7 +95,7 @@ if __name__ == "__main__":
                 data_loader = DataLoader(data_test, batch_size=hyperparams.batch_size, shuffle=True, num_workers=hyperparams.num_io_workers, pin_memory=False, persistent_workers=True)
 
                 model = _models.get(hyperparams.model_base)()
-                model.load_state_dict(torch.load(ckpt))
+                model.load_state_dict(torch.load(ckpt)['state_dict'])
                 model.to("cuda:0")
                 model.eval()
 
