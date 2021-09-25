@@ -268,6 +268,6 @@ class GazeEstimationModelMobilenetV2(GazeEstimationAbstractModel):
         for param in self.right_features.parameters():
             param.requires_grad = True
 
-        self.xl, self.xr, self.concat, self.fc = GazeEstimationAbstractModel._create_fc_layers(in_features=_left_model.classifier[0].in_features,
+        self.xl, self.xr, self.concat, self.fc = GazeEstimationAbstractModel._create_fc_layers(in_features=_left_model.classifier[1].in_features,
                                                                                                out_features=num_out)
         GazeEstimationAbstractModel._init_weights(self.modules())
