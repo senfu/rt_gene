@@ -124,22 +124,22 @@ class TrainRTGENE(pl.LightningModule):
                                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                                          std=[0.229, 0.224, 0.225])])
         _data_train = RTGENEH5Dataset(h5_filename=self.args.hdf5_file,
-                                      subject_list=self._train_subjects,
+                                      subject_list=self._validate_subjects,
                                       transform=_train_transforms)
         return DataLoader(_data_train, batch_size=self.args.batch_size, shuffle=True,
-                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
+                          num_workers=self.args.num_io_workers, pin_memory=False, persistent_workers=True)
 
     def val_dataloader(self):
         _data_validate = RTGENEH5Dataset(h5_filename=self.args.hdf5_file,
                                          subject_list=self._validate_subjects)
         return DataLoader(_data_validate, batch_size=self.args.batch_size, shuffle=False,
-                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
+                          num_workers=self.args.num_io_workers, pin_memory=False, persistent_workers=True)
 
     def test_dataloader(self):
         _data_test = RTGENEH5Dataset(h5_filename=self.args.hdf5_file,
                                      subject_list=self._test_subjects)
         return DataLoader(_data_test, batch_size=self.args.batch_size, shuffle=False,
-                          num_workers=self.args.num_io_workers, pin_memory=True, persistent_workers=True)
+                          num_workers=self.args.num_io_workers, pin_memory=False, persistent_workers=True)
 
 
 if __name__ == "__main__":
