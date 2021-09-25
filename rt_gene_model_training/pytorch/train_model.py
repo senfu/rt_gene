@@ -229,6 +229,6 @@ if __name__ == "__main__":
                           max_epochs=_hyperparams.max_epochs,
                           accumulate_grad_batches=_hyperparams.accumulate_grad_batches,
                           benchmark=_hyperparams.benchmark,
-                          accelerator='dp')
+                          accelerator='ddp')
         trainer.fit(_model)
         trainer.test()
