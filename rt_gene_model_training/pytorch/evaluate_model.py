@@ -85,7 +85,7 @@ if __name__ == "__main__":
             _models_list.append(_model)
 
         for fold_idx, test_subject in enumerate(test_subjects):
-            data_test = RTGENEH5Dataset(h5_file=h5py.File(hyperparams.hdf5_file, mode="r"), subject_list=test_subject)
+            data_test = RTGENEH5Dataset(h5_filename=hyperparams.hdf5_file, subject_list=test_subject)
             data_loader = DataLoader(data_test, batch_size=hyperparams.batch_size, shuffle=True, num_workers=hyperparams.num_io_workers, pin_memory=False)
             test_fold(data_loader, fold_idx=fold_idx, model_list=_models_list)
     else:
