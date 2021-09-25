@@ -45,7 +45,7 @@ class TrainRTGENE(pl.LightningModule):
         self._train_subjects = train_subjects
         self._validate_subjects = validate_subjects
         self._test_subjects = test_subjects
-        self.args = vars(hparams)
+        self.args = hparams
 
     def forward(self, left_patch, right_patch, head_pose):
         return self._model(left_patch, right_patch, head_pose)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     _model_parser = TrainRTGENE.add_model_specific_args(_root_parser)
     _hyperparams = _model_parser.parse_args()
     
-    pprint(_hyperparams)
+    pprint(vars(_hyperparams))
 
     pl.seed_everything(_hyperparams.seed)
 
