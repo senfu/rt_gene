@@ -44,7 +44,7 @@ class TrainRTGENE(pl.LightningModule):
         self._train_subjects = train_subjects
         self._validate_subjects = validate_subjects
         self._test_subjects = test_subjects
-        self.hparams = hparams
+        self.hparams = vars(hparams)
 
     def forward(self, left_patch, right_patch, head_pose):
         return self._model(left_patch, right_patch, head_pose)
