@@ -47,7 +47,7 @@ class RTGENEH5Dataset(data.Dataset):
             self.h5_file = h5py.File(self._h5_filename, 'r')
             _wanted_subjects = ["s{:03d}".format(_i) for _i in self.subject_list]
             self._subject_labels = []
-            for grp_s_n in tqdm(_wanted_subjects, desc="Loading subject metadata..."):  # subjects
+            for grp_s_n in _wanted_subjects:  # subjects
                 for grp_i_n, grp_i in self.h5_file[grp_s_n].items():  # images
                     if "left" in grp_i.keys() and "right" in grp_i.keys() and "label" in grp_i.keys():
                         left_dataset = grp_i["left"]
